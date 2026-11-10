@@ -32,6 +32,8 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     buildFeatures { compose = true }
+    // The calendar explicitly uses Korean even on devices configured in another language.
+    bundle { language { enableSplit = false } }
 }
 
 dependencies {

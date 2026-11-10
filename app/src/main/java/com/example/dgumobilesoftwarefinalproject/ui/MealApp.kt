@@ -1,16 +1,20 @@
 package com.example.dgumobilesoftwarefinalproject.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.dgumobilesoftwarefinalproject.R
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 
@@ -18,7 +22,7 @@ import java.time.LocalDate
 @Composable
 fun MealApp(vm: MealViewModel = viewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
-    var tab by rememberSaveable { mutableIntStateOf(1) }
+    var tab by rememberSaveable { mutableIntStateOf(0) }
     var detailId by rememberSaveable { mutableStateOf<String?>(null) }
     var sources by rememberSaveable { mutableStateOf(false) }
     var consumedSaveVersion by rememberSaveable { mutableIntStateOf(0) }
@@ -47,13 +51,22 @@ fun MealApp(vm: MealViewModel = viewModel()) {
             }, actions = { TextButton(onClick = { sources = true }) { Text("데이터 출처") } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = White, titleContentColor = Orange))
         }, bottomBar = {
-            NavigationBar(containerColor = White, contentColor = Orange, tonalElevation = 0.dp) {
-                listOf("음식 입력", "식사 보기", "식사 분석").forEachIndexed { index, label ->
-                    NavigationBarItem(selected = tab == index && !sources,
-                        onClick = { tab = index; detailId = null; sources = false },
-                        icon = { Text("0${index + 1}", fontWeight = FontWeight.Bold) }, label = { Text(label) },
-                        colors = NavigationBarItemDefaults.colors(selectedIconColor = White, selectedTextColor = Orange,
-                            unselectedIconColor = Orange, unselectedTextColor = Orange, indicatorColor = Orange))
+            Box(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 32.dp, vertical = 12.dp), contentAlignment = Alignment.Center) {
+                Surface(shape = RoundedCornerShape(40.dp), color = White, contentColor = Orange,
+                    border = BorderStroke(1.dp, PaleOrange)) {
+                    Row(Modifier.padding(6.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        val icons = listOf(R.drawable.ic_nav_entry, R.drawable.ic_nav_diary, R.drawable.ic_nav_analysis)
+                        listOf("음식 입력", "식사 보기", "식사 분석").forEachIndexed { index, label ->
+                            FilledIconToggleButton(checked = tab == index && !sources,
+                                onCheckedChange = { tab = index; detailId = null; sources = false },
+                                modifier = Modifier.size(60.dp), shape = RoundedCornerShape(30.dp),
+                                colors = IconButtonDefaults.filledIconToggleButtonColors(
+                                    containerColor = White, contentColor = Orange,
+                                    checkedContainerColor = Orange, checkedContentColor = White)) {
+                                Icon(painterResource(icons[index]), contentDescription = label, modifier = Modifier.size(26.dp))
+                            }
+                        }
+                    }
                 }
             }
         }, snackbarHost = { SnackbarHost(snackbar) }) { padding ->

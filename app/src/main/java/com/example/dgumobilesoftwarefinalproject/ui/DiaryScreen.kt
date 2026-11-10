@@ -4,6 +4,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,8 +20,8 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun DiaryScreen(meals: List<Meal>, photos: PhotoRepository, onAdd: () -> Unit, onSelect: (String) -> Unit) {
-    LazyColumn(contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        item {
+    LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = Modifier.testTag("meal-grid"), contentPadding = PaddingValues(20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        item(span = { GridItemSpan(2) }) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column {
                     Text("차곡차곡, 나의 식사", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
@@ -26,14 +29,14 @@ fun DiaryScreen(meals: List<Meal>, photos: PhotoRepository, onAdd: () -> Unit, o
                 }
             }
         }
-        if (meals.isEmpty()) item {
+        if (meals.isEmpty()) item(span = { GridItemSpan(2) }) {
             SectionCard(title = "아직 기록한 식사가 없어요") {
                 Text("오늘 먹은 음식부터 남겨 보세요. 하루와 한 주의 영양 균형을 함께 볼 수 있어요.")
                 Button(onClick = onAdd) { Text("첫 식사 기록하기") }
             }
         }
         meals.sortedByDescending { it.eatenAt }.groupBy { it.eatenAt.toLocalDate() }.forEach { (day, rows) ->
-            item(key = "day-$day") {
+            item(key = "day-$day", span = { GridItemSpan(2) }) {
                 Surface(color = Orange, contentColor = White, shape = RoundedCornerShape(18.dp)) {
                     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(day.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")), fontWeight = FontWeight.Bold)
@@ -45,17 +48,19 @@ fun DiaryScreen(meals: List<Meal>, photos: PhotoRepository, onAdd: () -> Unit, o
                 Card(onClick = { onSelect(meal.id) }, modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(22.dp), border = BorderStroke(1.dp, PaleOrange),
                     colors = CardDefaults.cardColors(containerColor = White, contentColor = Orange)) {
-                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        MealPhoto(meal.photoName, photos, Modifier.fillMaxWidth().height(180.dp))
+                    Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        MealPhoto(meal.photoName, photos, Modifier.fillMaxWidth().aspectRatio(1f))
                         Text("${meal.type.label} · ${meal.eatenAt.format(DateTimeFormatter.ofPattern("HH:mm"))}",
                             style = MaterialTheme.typography.labelLarge)
-                        Text(meal.items.joinToString(", ") { it.name }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(meal.items.joinToString(", ") { it.name }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold,
+                            maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        Text(meal.eatenAt.format(DateTimeFormatter.ofPattern("MM.dd")), style = MaterialTheme.typography.labelSmall)
                         Text("${NutritionCalculator.total(listOf(meal)).energyKcal.display()} kcal · 자세히 보기")
                     }
                 }
             }
         }
-        if (meals.isNotEmpty()) item { OutlinedButton(onClick = onAdd, modifier = Modifier.fillMaxWidth()) { Text("+ 식사 기록하기") } }
+        if (meals.isNotEmpty()) item(span = { GridItemSpan(2) }) { OutlinedButton(onClick = onAdd, modifier = Modifier.fillMaxWidth()) { Text("+ 식사 기록하기") } }
     }
 }
 

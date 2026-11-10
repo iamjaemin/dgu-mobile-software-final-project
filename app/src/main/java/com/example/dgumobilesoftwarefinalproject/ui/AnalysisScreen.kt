@@ -1,72 +1,96 @@
 package com.example.dgumobilesoftwarefinalproject.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.dgumobilesoftwarefinalproject.domain.MealAnalysis
-import com.example.dgumobilesoftwarefinalproject.model.*
+import com.example.dgumobilesoftwarefinalproject.domain.*
+import com.example.dgumobilesoftwarefinalproject.model.Meal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+private enum class AnalysisPeriod(val label: String) { MONTH("1달"), WEEK("7일"), FORTNIGHT("14일"), DAY("하루") }
+
 @Composable
 fun AnalysisScreen(meals: List<Meal>, today: LocalDate) {
+    var periodName by rememberSaveable { mutableStateOf(AnalysisPeriod.MONTH.name) }
     var dayText by rememberSaveable { mutableStateOf(today.toString()) }
+    var expanded by remember { mutableStateOf(false) }
+    val period = AnalysisPeriod.valueOf(periodName)
     val selectedDay = LocalDate.parse(dayText)
-    val daily = remember(meals, selectedDay) { MealAnalysis.day(meals, selectedDay) }
-    val week = remember(meals, today) { MealAnalysis.week(meals, today) }
-    val month = remember(meals, today) { MealAnalysis.month(meals, today) }
-    LazyColumn(contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        item {
-            Text("나의 식사 균형", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-            Text("하루부터 한 달까지, 기록으로 살펴봐요")
+    val summary = remember(meals, period, today, selectedDay) {
+        when (period) {
+            AnalysisPeriod.MONTH -> MealAnalysis.month(meals, today)
+            AnalysisPeriod.WEEK -> MealAnalysis.week(meals, today)
+            AnalysisPeriod.FORTNIGHT -> MealAnalysis.period(meals, today.minusDays(13), today)
+            AnalysisPeriod.DAY -> MealAnalysis.day(meals, selectedDay)
         }
-        item {
-            SectionCard(title = "하루의 영양 균형") {
-                DateButton(selectedDay) { dayText = it.toString() }
-                Text("${daily.total.count}끼 기록")
-                if (daily.total.count == 0) Text("이 날짜에는 기록한 식사가 없어요.")
+    }
+    LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = Modifier.testTag("analysis-grid"), contentPadding = PaddingValues(20.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        item(span = { GridItemSpan(2) }) {
+            SectionCard(title = "최근 칼로리 총량") {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("식사 분석", style = MaterialTheme.typography.labelLarge)
+                    Box {
+                        OutlinedButton(onClick = { expanded = true }, modifier = Modifier.testTag("analysis-period")) { Text("${period.label} ▾") }
+                        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                            AnalysisPeriod.entries.forEach { option -> DropdownMenuItem(text = { Text(option.label) },
+                                onClick = { periodName = option.name; expanded = false }) }
+                        }
+                    }
+                }
+                Text("${summary.total.nutrients.energyKcal.display()} kcal", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold,
+                    modifier = Modifier.testTag("analysis-total-kcal"))
+                Text("${summary.start} ~ ${summary.end}", style = MaterialTheme.typography.bodySmall)
+                if (period == AnalysisPeriod.DAY) DateButton(selectedDay) { dayText = it.toString() }
             }
         }
-        item { NutritionPanel(daily.total.nutrients, "하루 총 섭취량", balance = true) }
-        item {
-            SectionCard(title = "최근 7일") {
-                Text("${week.start} ~ ${week.end}", style = MaterialTheme.typography.bodySmall)
-                Text("${week.total.count}끼 · ${week.total.nutrients.energyKcal.display()} kcal", fontWeight = FontWeight.Bold)
-                week.byDate.forEach { (day, summary) ->
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(day.format(DateTimeFormatter.ofPattern("MM.dd")))
-                        Text("${summary.count}끼 · ${summary.nutrients.energyKcal.display()} kcal")
+        item { SectionCard(title = "기록한 식사") {
+            Text("${summary.total.count}끼", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text("${summary.byDate.count { it.value.count > 0 }}일 기록", style = MaterialTheme.typography.bodySmall)
+        } }
+        item { SectionCard(title = "하루 평균") {
+            Text("${(summary.total.nutrients.energyKcal / summary.byDate.size).display()}", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text("kcal · 빈 날짜 포함", style = MaterialTheme.typography.bodySmall)
+        } }
+        item(span = { GridItemSpan(2) }) {
+            SectionCard(title = "영양 균형") {
+                MacroDonut(summary.total.nutrients)
+                Text("탄수화물·단백질 4kcal/g, 지방 9kcal/g 기준의 에너지 비율이에요.", style = MaterialTheme.typography.bodySmall)
+                MacroBars(summary.total.nutrients)
+            }
+        }
+        item(span = { GridItemSpan(2) }) { Text("시간대별 섭취 영양소", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) }
+        items(TimeBand.entries, key = { it.name }) { band ->
+            val entry = summary.byTimeBand.getValue(band)
+            SectionCard(title = band.label, modifier = Modifier.testTag("timeband-${band.name}")) {
+                Text(band.hours, style = MaterialTheme.typography.labelMedium)
+                Text("${entry.nutrients.energyKcal.display()} kcal", fontWeight = FontWeight.Bold)
+                Text("${entry.count}끼", style = MaterialTheme.typography.bodySmall)
+                MacroBars(entry.nutrients, compact = true)
+            }
+        }
+        item(span = { GridItemSpan(2) }) {
+            SectionCard(title = "날짜별 열량") {
+                val max = summary.byDate.values.maxOfOrNull { it.nutrients.energyKcal }?.takeIf { it > 0 } ?: 1.0
+                summary.byDate.forEach { (day, value) ->
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(day.format(DateTimeFormatter.ofPattern("MM.dd")), style = MaterialTheme.typography.labelSmall)
+                            Text("${value.nutrients.energyKcal.display()} kcal", style = MaterialTheme.typography.labelSmall)
+                        }
+                        LinearProgressIndicator(progress = { (value.nutrients.energyKcal / max).toFloat() },
+                            modifier = Modifier.fillMaxWidth(), color = Orange, trackColor = PaleOrange, gapSize = 0.dp, drawStopIndicator = {})
                     }
                 }
             }
         }
-        item { NutritionPanel(week.total.nutrients, "한 주의 영양 균형", balance = true) }
-        item {
-            SectionCard(title = "최근 한 달") {
-                Text("${month.start} ~ ${month.end}", style = MaterialTheme.typography.bodySmall)
-                Text("${month.total.nutrients.energyKcal.display()} kcal", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                Text("${month.total.count}끼 기록 · 하루 평균 ${(month.total.nutrients.energyKcal / month.byDate.size).display()} kcal")
-                Text("평균은 기록이 없는 날짜도 포함해 계산해요.", style = MaterialTheme.typography.bodySmall)
-            }
-        }
-        item { Text("한 달 동안, 끼니별 섭취", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) }
-        MealType.entries.forEach { type ->
-            item {
-                val summary = month.byType.getValue(type)
-                SectionCard(title = "${type.label} · ${summary.count}끼") {
-                    Text("${summary.nutrients.energyKcal.display()} kcal", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    Text("탄수화물 ${summary.nutrients.carbohydrateG.display()} g")
-                    Text("단백질 ${summary.nutrients.proteinG.display()} g")
-                    Text("지방 ${summary.nutrients.fatG.display()} g")
-                }
-            }
-        }
-        item { Text("표시된 값은 기록한 음식의 합계예요. 미래 날짜의 식사는 오늘 기준 주간·월간 분석에 포함하지 않아요.",
-            style = MaterialTheme.typography.bodySmall) }
+        item(span = { GridItemSpan(2) }) { Text("실제로 기록한 시각으로 시간대를 나눠요. 막대 길이는 각 카드 안의 최댓값 기준이며, 총 열량은 DB kcal를 합산해요.", style = MaterialTheme.typography.bodySmall) }
     }
 }
