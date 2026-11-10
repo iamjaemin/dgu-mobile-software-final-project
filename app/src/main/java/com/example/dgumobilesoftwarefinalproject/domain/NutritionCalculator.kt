@@ -30,12 +30,25 @@ object NutritionCalculator {
 
 data class MealSummary(val count: Int, val nutrients: Nutrients)
 
+enum class TimeBand(val label: String, val hours: String, val startHour: Int) {
+    DAWN("새벽", "00–06시", 0), MORNING("오전", "06–12시", 6),
+    AFTERNOON("오후", "12–18시", 12), EVENING("저녁", "18–24시", 18);
+
+    companion object {
+        fun at(hour: Int): TimeBand {
+            require(hour in 0..23)
+            return entries.last { hour >= it.startHour }
+        }
+    }
+}
+
 data class PeriodSummary(
     val start: LocalDate,
     val end: LocalDate,
     val total: MealSummary,
     val byType: Map<MealType, MealSummary>,
     val byDate: Map<LocalDate, MealSummary>,
+    val byTimeBand: Map<TimeBand, MealSummary>,
 )
 
 object MealAnalysis {
@@ -46,7 +59,8 @@ object MealAnalysis {
         val dates = generateSequence(start) { it.plusDays(1) }.takeWhile { it <= end }
             .associateWith { day -> summary(selected.filter { it.eatenAt.toLocalDate() == day }) }
         return PeriodSummary(start, end, summary(selected),
-            MealType.entries.associateWith { type -> summary(selected.filter { it.type == type }) }, dates)
+            MealType.entries.associateWith { type -> summary(selected.filter { it.type == type }) }, dates,
+            TimeBand.entries.associateWith { band -> summary(selected.filter { TimeBand.at(it.eatenAt.hour) == band }) })
     }
 
     fun day(meals: List<Meal>, day: LocalDate) = period(meals, day, day)

@@ -61,4 +61,18 @@ class NutritionCalculatorTest {
         assertEquals(listOf(0.0, 0.0, 0.0), NutritionCalculator.macroShares(Nutrients()))
         assertEquals(Nutrients(), NutritionCalculator.total(emptyList()))
     }
+
+    @Test fun timeBandsUseActualTimeAndNotMealType() {
+        val rows = listOf(meal("2026-11-11T00:00"), meal("2026-11-11T05:59"),
+            meal("2026-11-11T06:00"), meal("2026-11-11T11:59"),
+            meal("2026-11-11T12:00"), meal("2026-11-11T17:59"),
+            meal("2026-11-11T18:00"), meal("2026-11-11T23:59"))
+        val period = MealAnalysis.day(rows, LocalDate.of(2026, 11, 11))
+        TimeBand.entries.forEach { band ->
+            assertEquals(2, period.byTimeBand.getValue(band).count)
+            assertEquals(274.0, period.byTimeBand.getValue(band).nutrients.energyKcal, 0.0)
+        }
+        assertEquals(8, period.byType.getValue(MealType.LUNCH).count)
+        assertThrows(IllegalArgumentException::class.java) { TimeBand.at(24) }
+    }
 }
