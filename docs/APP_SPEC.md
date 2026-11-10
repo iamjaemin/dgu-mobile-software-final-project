@@ -22,3 +22,18 @@
 ## 검증
 
 데이터 변환 기존 테스트, 순수 Kotlin 단위 테스트(양·단위·날짜 경계·0 데이터·종류별 합계), 저장 직렬화 및 재실행 복구 테스트, Compose 입력·목록·상세·출처 테스트와 APK 빌드·lint를 수행한다. 실제 기기/에뮬레이터에서 가능한 범위는 결과와 함께 기록한다.
+
+### 2026-11-11 검증 결과
+
+- `:app:assembleDebug`: 성공. `app/build/outputs/apk/debug/app-debug.apk` 생성.
+- `:app:testDebugUnitTest`: 계산 및 분석 6개와 기존 기본 테스트 1개 통과.
+- `:app:connectedDebugAndroidTest`: Android 17(API 37.1) Medium_Phone 에뮬레이터에서 7개 통과(저장소·사진 4개, Compose UI 2개, 기존 기본 테스트 1개).
+- UI 테스트: DB 검색, 150g 입력 시 205.5kcal 미리보기, 식사 저장·상세, Activity 재생성 후 상세 복원, 삭제 확인, 분석 및 두 출처 화면.
+- 저장 테스트: 새로운 저장소 인스턴스에서 동일 기록 복원, 손상된 파일의 오류 처리, 사진 복사 후 원본 삭제 및 참조에 따른 사진 정리.
+- `:app:lintDebug`: 오류 0개. 의존성 및 도구의 새 버전 알림 6개가 남아 있으며 이번 구현에서 일괄 업그레이드하지 않았다.
+- Python 데이터 테스트 11개 통과. 앱 assets와 선별 JSON의 바이트 일치 확인.
+- 실제 실행 화면 캡처로 흰색·주황색 카드, 텍스트, 하단 탐색 및 상태 표시줄 배치를 검토했다. 사진과 시스템 선택기·키보드 등 OS 화면의 색은 원래 표현을 따른다.
+
+최소 API 24 호환을 설정했으며 하위 API 기기의 실행 검증은 아직 하지 않았다. 저장하지 않은 입력 초안은 ViewModel에 유지되어 화면 회전을 견디지만 프로세스 종료 후 복원하지 않는다. 저장한 식사와 사진은 앱 내부 파일에서 복원한다. 외부 시스템 사진 선택기의 실제 갤러리 조작은 자동화하지 않았으며 선택 후 사진 복사·보관 경로를 기기 테스트로 검증했다.
+
+구현 시 [Compose 설정](https://developer.android.com/develop/ui/compose/setup), [Compose BOM](https://developer.android.com/develop/ui/compose/bom), [내장 Kotlin](https://developer.android.com/build/migrate-to-built-in-kotlin), [시스템 사진 선택기](https://developer.android.com/training/data-storage/shared/photo-picker)의 공식 문서를 확인했다.

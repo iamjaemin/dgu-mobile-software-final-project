@@ -18,3 +18,4 @@ local.properties
 /.idea/
 __pycache__/
 *.py[cod]
+/.kotlin/

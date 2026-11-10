@@ -1,9 +1,18 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.DguMobileSoftwareFinalProject" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<resources>
+    <style name="Theme.DguMobileSoftwareFinalProject" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#AE4100</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#AE4100</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#AE4100</item>
+        <item name="colorOnSurfaceVariant">#AE4100</item>
+        <item name="android:colorAccent">#AE4100</item>
+        <item name="android:windowBackground">#FFFFFF</item>
+        <item name="android:statusBarColor">#AE4100</item>
+        <item name="android:navigationBarColor">#AE4100</item>
+        <item name="android:textColorPrimary">#AE4100</item>
+        <item name="android:textColorSecondary">#AE4100</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
-
-    <style name="Theme.DguMobileSoftwareFinalProject" parent="Base.Theme.DguMobileSoftwareFinalProject" />
 </resources>

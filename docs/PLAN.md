@@ -1,5 +1,7 @@
 # 식단 관리 앱 개발 계획
 
+P001/P002의 초기 계획이다. P003의 구체적인 기능과 구현 결과는 [APP_SPEC.md](APP_SPEC.md)를 따른다. 현재 저장소·계산·Compose 화면은 구현되어 `feature/ui-compose`에 연결되어 있다.
+
 ## 목표와 현재 범위
 
 Kotlin + Jetpack Compose로 음식을 검색하고 섭취량을 기록해 끼니별·일별 영양소 합계를 확인하는 오프라인 앱을 만든다. 이번 작업은 개발 계획, 데이터 선별, 통합 JSON 생성까지다. 기존 프로젝트는 XML/AppCompat 기본 화면이며 Compose 전환은 UI 브랜치에서 진행한다.
