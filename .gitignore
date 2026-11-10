@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Local IDE state and Python dataset tooling
+/.idea/
+__pycache__/
+*.py[cod]
