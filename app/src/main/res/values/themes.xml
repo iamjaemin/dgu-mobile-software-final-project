@@ -1,18 +1,19 @@
 <resources>
     <style name="Theme.DguMobileSoftwareFinalProject" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">#AE4100</item>
+        <item name="colorPrimary">#FF6F0F</item>
         <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorSecondary">#AE4100</item>
+        <item name="colorSecondary">#FF6F0F</item>
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorSurface">#FFFFFF</item>
-        <item name="colorOnSurface">#AE4100</item>
-        <item name="colorOnSurfaceVariant">#AE4100</item>
-        <item name="android:colorAccent">#AE4100</item>
-        <item name="android:windowBackground">#FFFFFF</item>
-        <item name="android:statusBarColor">#AE4100</item>
-        <item name="android:navigationBarColor">#AE4100</item>
-        <item name="android:textColorPrimary">#AE4100</item>
-        <item name="android:textColorSecondary">#AE4100</item>
-        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorOnSurface">#242424</item>
+        <item name="colorOnSurfaceVariant">#777777</item>
+        <item name="android:colorAccent">#FF6F0F</item>
+        <item name="android:windowBackground">#FAFAFA</item>
+        <item name="android:statusBarColor">#FAFAFA</item>
+        <item name="android:navigationBarColor">#FAFAFA</item>
+        <item name="android:textColorPrimary">#242424</item>
+        <item name="android:textColorSecondary">#777777</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:fontFamily">@font/pretendard_regular</item>
     </style>
 </resources>

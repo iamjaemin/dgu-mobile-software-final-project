@@ -1,6 +1,5 @@
 package com.example.dgumobilesoftwarefinalproject.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -37,7 +36,7 @@ fun DiaryScreen(meals: List<Meal>, photos: PhotoRepository, onAdd: () -> Unit, o
         }
         meals.sortedByDescending { it.eatenAt }.groupBy { it.eatenAt.toLocalDate() }.forEach { (day, rows) ->
             item(key = "day-$day", span = { GridItemSpan(2) }) {
-                Surface(color = Orange, contentColor = White, shape = RoundedCornerShape(18.dp)) {
+                Surface(color = White, contentColor = Ink, shape = RoundedCornerShape(24.dp), modifier = Modifier.softCardShadow()) {
                     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(day.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")), fontWeight = FontWeight.Bold)
                         Text("${NutritionCalculator.total(rows).energyKcal.display()} kcal · ${rows.size}끼 기록")
@@ -45,9 +44,9 @@ fun DiaryScreen(meals: List<Meal>, photos: PhotoRepository, onAdd: () -> Unit, o
                 }
             }
             items(rows, key = { it.id }) { meal ->
-                Card(onClick = { onSelect(meal.id) }, modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(22.dp), border = BorderStroke(1.dp, PaleOrange),
-                    colors = CardDefaults.cardColors(containerColor = White, contentColor = Orange)) {
+                Card(onClick = { onSelect(meal.id) }, modifier = Modifier.fillMaxWidth().softCardShadow(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = White, contentColor = Ink)) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         MealPhoto(meal.photoName, photos, Modifier.fillMaxWidth().aspectRatio(1f))
                         Text("${meal.type.label} · ${meal.eatenAt.format(DateTimeFormatter.ofPattern("HH:mm"))}",

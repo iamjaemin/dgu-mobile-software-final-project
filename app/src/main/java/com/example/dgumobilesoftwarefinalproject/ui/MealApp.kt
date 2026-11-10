@@ -1,7 +1,6 @@
 package com.example.dgumobilesoftwarefinalproject.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -41,7 +40,7 @@ fun MealApp(vm: MealViewModel = viewModel()) {
     }
     val detail = state.meals.find { it.id == detailId }
     BackHandler(enabled = sources || detailId != null) { if (sources) sources = false else detailId = null }
-    Scaffold(containerColor = White, contentColor = Orange,
+    Scaffold(containerColor = AppBackground, contentColor = Ink,
         topBar = {
             TopAppBar(title = {
                 Column {
@@ -49,11 +48,11 @@ fun MealApp(vm: MealViewModel = viewModel()) {
                     Text("MEAL DIARY", style = MaterialTheme.typography.labelSmall)
                 }
             }, actions = { TextButton(onClick = { sources = true }) { Text("데이터 출처") } },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = White, titleContentColor = Orange))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = AppBackground, titleContentColor = Ink))
         }, bottomBar = {
             Box(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 32.dp, vertical = 12.dp), contentAlignment = Alignment.Center) {
-                Surface(shape = RoundedCornerShape(40.dp), color = White, contentColor = Orange,
-                    border = BorderStroke(1.dp, PaleOrange)) {
+                Surface(shape = RoundedCornerShape(40.dp), color = White, contentColor = Ink,
+                    modifier = Modifier.softCardShadow(RoundedCornerShape(40.dp))) {
                     Row(Modifier.padding(6.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         val icons = listOf(R.drawable.ic_nav_entry, R.drawable.ic_nav_diary, R.drawable.ic_nav_analysis)
                         listOf("음식 입력", "식사 보기", "식사 분석").forEachIndexed { index, label ->
@@ -61,8 +60,8 @@ fun MealApp(vm: MealViewModel = viewModel()) {
                                 onCheckedChange = { tab = index; detailId = null; sources = false },
                                 modifier = Modifier.size(60.dp), shape = RoundedCornerShape(30.dp),
                                 colors = IconButtonDefaults.filledIconToggleButtonColors(
-                                    containerColor = White, contentColor = Orange,
-                                    checkedContainerColor = Orange, checkedContentColor = White)) {
+                                    containerColor = White, contentColor = Muted,
+                                    checkedContainerColor = Primary, checkedContentColor = White)) {
                                 Icon(painterResource(icons[index]), contentDescription = label, modifier = Modifier.size(26.dp))
                             }
                         }

@@ -31,6 +31,8 @@ fun DateTimeSheet(date: LocalDate, time: LocalTime, onDismiss: () -> Unit,
     var selectedMillis by rememberSaveable { mutableLongStateOf(date.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()) }
     var hour by rememberSaveable { mutableIntStateOf(time.hour) }
     var minute by rememberSaveable { mutableIntStateOf(time.minute) }
+    var hourScrolling by remember { mutableStateOf(false) }
+    var minuteScrolling by remember { mutableStateOf(false) }
     val calendar = remember { DatePickerState(locale = Locale.KOREA, initialSelectedDateMillis = selectedMillis) }
     LaunchedEffect(calendar.selectedDateMillis) { calendar.selectedDateMillis?.let { selectedMillis = it } }
     CompositionLocalProvider(LocalContext provides koreanContext, LocalConfiguration provides koreanConfiguration,
@@ -43,37 +45,20 @@ fun DateTimeSheet(date: LocalDate, time: LocalTime, onDismiss: () -> Unit,
                     DatePicker(state = calendar, title = null, headline = null, showModeToggle = false,
                         modifier = Modifier.fillMaxWidth().testTag("korean-calendar"))
                     if (includeTime) {
-                        HorizontalDivider(Modifier.padding(horizontal = 24.dp), color = PaleOrange)
+                        HorizontalDivider(Modifier.padding(horizontal = 24.dp), color = Divider)
                         Text("식사 시간 · 24시간", modifier = Modifier.padding(24.dp), style = MaterialTheme.typography.titleMedium)
-                        Row(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 24.dp).testTag("meal-time-input"),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            TimeDropdown(hour, 0..23, "시", Modifier.weight(1f)) { hour = it }
-                            TimeDropdown(minute, 0..59, "분", Modifier.weight(1f)) { minute = it }
-                        }
+                        WheelTimePicker(hour, minute, onHour = { hour = it }, onMinute = { minute = it },
+                            onHourScrolling = { hourScrolling = it }, onMinuteScrolling = { minuteScrolling = it })
                     }
                 }
                 Button(onClick = {
                     val appliedMillis = calendar.selectedDateMillis ?: return@Button
                     onConfirm(Instant.ofEpochMilli(appliedMillis).atZone(ZoneOffset.UTC).toLocalDate(), LocalTime.of(hour, minute))
-                }, enabled = calendar.selectedDateMillis != null,
+                }, enabled = calendar.selectedDateMillis != null && !hourScrolling && !minuteScrolling,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp).heightIn(min = 52.dp)) {
                     Text(if (includeTime) "날짜와 시간 적용" else "날짜 적용")
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun TimeDropdown(value: Int, range: IntRange, suffix: String, modifier: Modifier, onSelect: (Int) -> Unit) {
-    var open by remember { mutableStateOf(false) }
-    Box(modifier) {
-        OutlinedButton(onClick = { open = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)) {
-            Text("${value.toString().padStart(2, '0')}$suffix ▾", style = MaterialTheme.typography.titleLarge)
-        }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }, modifier = Modifier.heightIn(max = 280.dp)) {
-            range.forEach { number -> DropdownMenuItem(text = { Text("${number.toString().padStart(2, '0')}$suffix") },
-                onClick = { onSelect(number); open = false }) }
         }
     }
 }

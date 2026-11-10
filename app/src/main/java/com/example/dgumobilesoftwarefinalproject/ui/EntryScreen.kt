@@ -40,14 +40,8 @@ fun EntryScreen(state: MealUiState, vm: MealViewModel) {
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text("한 끼를 기록해요", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                titles.indices.forEach { index ->
-                    Box(Modifier.size(32.dp).clip(CircleShape).background(if (index <= step) Orange else PaleOrange), contentAlignment = Alignment.Center) {
-                        Text("${index + 1}", color = if (index <= step) White else Orange, style = MaterialTheme.typography.labelMedium)
-                    }
-                    if (index < 3) HorizontalDivider(Modifier.weight(1f), color = if (index < step) Orange else PaleOrange)
-                }
-            }
+            LinearProgressIndicator(progress = { (step + 1) / 4f }, modifier = Modifier.fillMaxWidth().height(3.dp),
+                color = Primary, trackColor = Divider, gapSize = 0.dp, drawStopIndicator = {})
             Text("${step + 1}/4 · ${titles[step]}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         }
         key(step) {
@@ -59,7 +53,7 @@ fun EntryScreen(state: MealUiState, vm: MealViewModel) {
                             Text(state.time.format(DateTimeFormatter.ofPattern("HH:mm")), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                             OutlinedButton(onClick = { choosingTime = true }, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) { Text("날짜와 시간 선택") }
                             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                MealType.entries.forEach { type -> FilterChip(selected = state.type == type,
+                                MealType.entries.forEach { type -> RoundedFilterChip(selected = state.type == type,
                                     onClick = { vm.setType(type) }, label = { Text(type.label) }, enabled = !state.busy) }
                             }
                         }
@@ -74,12 +68,11 @@ fun EntryScreen(state: MealUiState, vm: MealViewModel) {
                         items(state.items, key = { it.id }) { item ->
                             SectionCard {
                                 Text(item.food.category + " · " + item.food.origin, style = MaterialTheme.typography.labelSmall)
-                                OutlinedTextField(value = item.name, onValueChange = { vm.updateItem(item.id, name = it) },
-                                    label = { Text("음식·반찬 이름") }, modifier = Modifier.fillMaxWidth(), singleLine = true, enabled = !state.busy, isError = item.name.isBlank())
-                                OutlinedTextField(value = item.amount, onValueChange = { vm.updateItem(item.id, amount = it) },
-                                    label = { Text("섭취량 (${item.food.basisUnit})") }, modifier = Modifier.fillMaxWidth(), singleLine = true,
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), enabled = !state.busy,
-                                    isError = item.quantity == null, supportingText = {
+                                MealInput(value = item.name, onValueChange = { vm.updateItem(item.id, name = it) },
+                                    hint = "음식·반찬 이름", enabled = !state.busy, error = item.name.isBlank())
+                                MealInput(value = item.amount, onValueChange = { vm.updateItem(item.id, amount = it) },
+                                    hint = "섭취량 (${item.food.basisUnit})", keyboard = KeyboardType.Decimal, enabled = !state.busy,
+                                    error = item.quantity == null, supportingText = {
                                         Text(if (item.quantity == null) "0보다 크고 100,000 이하인 양을 입력해 주세요."
                                         else if (item.food.basisUnit == "mL") "부피 기준 음료는 mL로 입력해요." else "실제로 먹은 양을 g으로 입력해 주세요.")
                                     })
@@ -94,10 +87,9 @@ fun EntryScreen(state: MealUiState, vm: MealViewModel) {
                     }
                     2 -> item {
                         SectionCard(title = "사진으로 남기는 식사") {
-                            MealPhoto(state.photo, vm.photos, Modifier.fillMaxWidth().height(220.dp))
-                            Button(onClick = { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
-                                enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Orange, contentColor = White)) { Text(if (state.photo == null) "사진 선택" else "사진 변경") }
+                            PhotoUploadArea(state.photo, vm.photos, enabled = !state.busy) {
+                                picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                            }
                             if (state.photo != null) TextButton(onClick = vm::removePhoto, enabled = !state.busy) { Text("사진 제거") }
                             Text("사진은 선택 사항이에요. 사진 없이도 다음 단계로 이동할 수 있어요.", style = MaterialTheme.typography.bodySmall)
                         }

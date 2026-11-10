@@ -23,7 +23,7 @@ import com.example.dgumobilesoftwarefinalproject.model.Nutrients
 fun MacroDonut(nutrients: Nutrients) {
     val shares = NutritionCalculator.macroShares(nutrients)
     val labels = listOf("탄수화물", "단백질", "지방")
-    val colors = listOf(Orange, BrightOrange, PaleOrange)
+    val colors = listOf(Primary, Muted, Divider)
     val description = labels.indices.joinToString(", ") { "${labels[it]} ${(shares[it] * 100).display()}%" }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Box(Modifier.fillMaxWidth().height(180.dp), contentAlignment = Alignment.Center) {
@@ -31,7 +31,7 @@ fun MacroDonut(nutrients: Nutrients) {
                 val width = 26.dp.toPx()
                 val margin = width / 2
                 val arcSize = Size(size.width - width, size.height - width)
-                drawArc(PaleOrange, 0f, 360f, false, Offset(margin, margin), arcSize, style = Stroke(width))
+                drawArc(Divider, 0f, 360f, false, Offset(margin, margin), arcSize, style = Stroke(width))
                 var angle = -90f
                 shares.forEachIndexed { i, share ->
                     val sweep = (share * 360).toFloat()
@@ -69,8 +69,8 @@ fun MacroBars(nutrients: Nutrients, compact: Boolean = false) {
                     val stroke = size.height
                     val start = stroke / 2
                     val end = size.width - start
-                    drawLine(PaleOrange, Offset(start, stroke / 2), Offset(end, stroke / 2), stroke, StrokeCap.Round)
-                    if (value > 0) drawLine(Orange, Offset(start, stroke / 2), Offset(start + (end - start) * (value / max).toFloat(), stroke / 2), stroke, StrokeCap.Round)
+                    drawLine(Divider, Offset(start, stroke / 2), Offset(end, stroke / 2), stroke, StrokeCap.Round)
+                    if (value > 0) drawLine(Primary, Offset(start, stroke / 2), Offset(start + (end - start) * (value / max).toFloat(), stroke / 2), stroke, StrokeCap.Round)
                 }
             }
         }

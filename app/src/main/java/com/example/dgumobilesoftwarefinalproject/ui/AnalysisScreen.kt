@@ -86,7 +86,7 @@ fun AnalysisScreen(meals: List<Meal>, today: LocalDate) {
                             Text("${value.nutrients.energyKcal.display()} kcal", style = MaterialTheme.typography.labelSmall)
                         }
                         LinearProgressIndicator(progress = { (value.nutrients.energyKcal / max).toFloat() },
-                            modifier = Modifier.fillMaxWidth(), color = Orange, trackColor = PaleOrange, gapSize = 0.dp, drawStopIndicator = {})
+                            modifier = Modifier.fillMaxWidth(), color = Primary, trackColor = Divider, gapSize = 0.dp, drawStopIndicator = {})
                     }
                 }
             }

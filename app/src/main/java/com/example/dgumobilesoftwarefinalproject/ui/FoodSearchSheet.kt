@@ -1,6 +1,5 @@
 package com.example.dgumobilesoftwarefinalproject.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.rememberScrollState
@@ -35,7 +34,7 @@ fun FoodPicker(foods: List<Food>, onDismiss: () -> Unit, onSelect: (Food) -> Uni
         Column(Modifier.fillMaxWidth().fillMaxHeight(.95f).imePadding().padding(horizontal = 20.dp).testTag("food-search-sheet"),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("음식과 반찬 찾기", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            OutlinedTextField(query, onValueChange = { query = it }, label = { Text("음식 이름 검색") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            MealInput(query, onValueChange = { query = it }, hint = "음식 이름 검색")
             FilterRow("카테고리", categories, category) { category = it }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterDropdown("식품 기원", origins, origin, Modifier.weight(1f)) { origin = it }
@@ -50,8 +49,8 @@ fun FoodPicker(foods: List<Food>, onDismiss: () -> Unit, onSelect: (Food) -> Uni
                 LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = Modifier.weight(1f).testTag("food-results-grid"),
                     horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(bottom = 12.dp)) {
                     items(results, key = { it.code }) { food ->
-                        Card(onClick = { onSelect(food); added++ }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp),
-                            border = BorderStroke(1.dp, PaleOrange), colors = CardDefaults.cardColors(containerColor = White)) {
+                        Card(onClick = { onSelect(food); added++ }, modifier = Modifier.fillMaxWidth().softCardShadow(), shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = White, contentColor = Ink)) {
                             Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 Text(food.category, style = MaterialTheme.typography.labelSmall)
                                 Text(food.name, fontWeight = FontWeight.Bold)
@@ -72,7 +71,7 @@ fun FoodPicker(foods: List<Food>, onDismiss: () -> Unit, onSelect: (Food) -> Uni
 private fun FilterRow(label: String, values: List<String>, selected: String, onSelect: (String) -> Unit) {
     Text(label, style = MaterialTheme.typography.labelMedium)
     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        values.forEach { value -> FilterChip(selected = value == selected, onClick = { onSelect(value) }, label = { Text(value) }, modifier = Modifier.testTag("category-$value")) }
+        values.forEach { value -> RoundedFilterChip(selected = value == selected, onClick = { onSelect(value) }, label = { Text(value) }, modifier = Modifier.testTag("category-$value")) }
     }
 }
 

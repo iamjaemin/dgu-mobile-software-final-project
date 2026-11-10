@@ -8,13 +8,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.graphics.toArgb
 import com.example.dgumobilesoftwarefinalproject.ui.MealApp
 import com.example.dgumobilesoftwarefinalproject.ui.MealTheme
-import com.example.dgumobilesoftwarefinalproject.ui.Orange
+import com.example.dgumobilesoftwarefinalproject.ui.AppBackground
+import com.example.dgumobilesoftwarefinalproject.ui.Ink
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Orange.toArgb()),
-            navigationBarStyle = SystemBarStyle.dark(Orange.toArgb()))
+        enableEdgeToEdge(statusBarStyle = SystemBarStyle.light(AppBackground.toArgb(), Ink.toArgb()),
+            navigationBarStyle = SystemBarStyle.light(AppBackground.toArgb(), Ink.toArgb()))
         setContent { MealTheme { MealApp() } }
     }
 }
