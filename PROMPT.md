@@ -34,6 +34,14 @@ bottom nav floating으로 변경하고 icon 사용해 글자 빼고 앱 시작 �
 
 관련 커밋: 아래 커밋 매핑의 P004 행을 참고한다.
 
+## P005
+
+```text
+프리탠다드 폰트 사용하고 primary #ff6f0f background #fafafa card #ffffff에 box shadow로 옅은 그림자 써 기존 주황 갈색 살구색 삭제해 기록 화면 indicator 대신 얇게 progress bar 사용해 사진 업로드 card는 흰색에 점선 테두리와 카메라 아이콘 +로 구성해 input 필드는 전부자 outline label 없애고 #f8f8f8에 border 없이 해 chip, button들은 radius 둥글게 처리해 시간 선택은 wheel로 해서 datepicker처럼 구성해
+```
+
+관련 커밋: 작업 완료 후 아래 표에 확정 해시를 기록한다.
+
 ## 커밋 매핑
 
 | 프롬프트 | 전체 커밋 해시 | 작업 |
