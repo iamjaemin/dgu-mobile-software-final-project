@@ -40,7 +40,7 @@ bottom nav floating으로 변경하고 icon 사용해 글자 빼고 앱 시작 �
 프리탠다드 폰트 사용하고 primary #ff6f0f background #fafafa card #ffffff에 box shadow로 옅은 그림자 써 기존 주황 갈색 살구색 삭제해 기록 화면 indicator 대신 얇게 progress bar 사용해 사진 업로드 card는 흰색에 점선 테두리와 카메라 아이콘 +로 구성해 input 필드는 전부자 outline label 없애고 #f8f8f8에 border 없이 해 chip, button들은 radius 둥글게 처리해 시간 선택은 wheel로 해서 datepicker처럼 구성해
 ```
 
-관련 커밋: 작업 완료 후 아래 표에 확정 해시를 기록한다.
+관련 커밋: 아래 커밋 매핑의 P005 행을 참고한다.
 
 ## 커밋 매핑
 
@@ -54,5 +54,7 @@ bottom nav floating으로 변경하고 icon 사용해 글자 빼고 앱 시작 �
 | P004 | `63d65fec617dc8009b1f5e21cf6bc3f435a6a445` | 계산 브랜치: 분석 집계 및 경계 검증 |
 | P004 | `113c070e5625c48d19f48c7fb6344bd792a03af1` | UI 브랜치에 필요한 계산 변경 연결 |
 | P004 | `96149b85295ce3af11449320ff226185e2d9344f` | 플로팅 아이콘 탐색, 단계별 입력, 한국어 달력·필터 하단 시트, 카드 그리드·기간 선택·그래프 및 검증 |
+| P005 | `c7a4917e62533760038ed97fb199cfcb1ff78a21` | Pretendard 원본 OTF 3종, 라이선스 및 출처 기록 |
+| P005 | `2684d46ba03cdcb698a6705c4ed4d43cf62e1d41` | 지정 색상·그림자·입력 스타일·진행률·사진 업로드·시간 휠 및 검증 |
 
 커밋 트레일러 `Prompt-ID`로도 조회한다. 이 매핑만 갱신하는 커밋은 자기 해시를 기록하지 않는다(`git log -- PROMPT.md`).
