@@ -19,6 +19,9 @@ class AnalysisUiTest {
         val meals = listOf(meal("old", today.minusDays(10), 8, 100.0), meal("recent", today, 20, 200.0))
         rule.setContent { MealTheme { AnalysisScreen(meals, today) } }
         rule.onNodeWithTag("analysis-total-kcal").assertTextEquals("300.0 kcal")
+        rule.onNodeWithTag("analysis-grid").performScrollToNode(hasTestTag("daily-calories-chart"))
+        rule.onNodeWithTag("daily-calories-chart").assertIsDisplayed()
+            .assert(hasContentDescription("2026-11-01: 100.0 kcal", substring = true))
         rule.onNodeWithTag("analysis-grid").performScrollToNode(hasTestTag("timeband-MORNING"))
         rule.onNodeWithTag("timeband-MORNING").assert(hasAnyDescendant(hasText("100.0 kcal")))
         rule.onNodeWithTag("analysis-grid").performScrollToNode(hasTestTag("timeband-EVENING"))
@@ -29,5 +32,9 @@ class AnalysisUiTest {
         rule.onNodeWithTag("analysis-total-kcal").assertTextEquals("200.0 kcal")
         rule.onNodeWithTag("analysis-grid").performScrollToNode(hasTestTag("timeband-MORNING"))
         rule.onNodeWithTag("timeband-MORNING").assert(hasAnyDescendant(hasText("0.0 kcal")))
+        rule.onNodeWithTag("analysis-grid").performScrollToNode(hasTestTag("daily-calories-chart"))
+        rule.onNodeWithTag("daily-calories-chart")
+            .assert(hasContentDescription("2026-11-11: 200.0 kcal", substring = true))
+            .assert(hasContentDescription("2026-11-01", substring = true).not())
     }
 }

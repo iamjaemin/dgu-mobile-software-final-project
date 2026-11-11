@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import com.example.dgumobilesoftwarefinalproject.domain.*
 import com.example.dgumobilesoftwarefinalproject.model.Meal
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 private enum class AnalysisPeriod(val label: String) { MONTH("1달"), WEEK("7일"), FORTNIGHT("14일"), DAY("하루") }
 
@@ -78,17 +77,7 @@ fun AnalysisScreen(meals: List<Meal>, today: LocalDate) {
         }
         item(span = { GridItemSpan(2) }) {
             SectionCard(title = "날짜별 열량") {
-                val max = summary.byDate.values.maxOfOrNull { it.nutrients.energyKcal }?.takeIf { it > 0 } ?: 1.0
-                summary.byDate.forEach { (day, value) ->
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(day.format(DateTimeFormatter.ofPattern("MM.dd")), style = MaterialTheme.typography.labelSmall)
-                            Text("${value.nutrients.energyKcal.display()} kcal", style = MaterialTheme.typography.labelSmall)
-                        }
-                        LinearProgressIndicator(progress = { (value.nutrients.energyKcal / max).toFloat() },
-                            modifier = Modifier.fillMaxWidth(), color = Primary, trackColor = Divider, gapSize = 0.dp, drawStopIndicator = {})
-                    }
-                }
+                DailyCaloriesChart(summary.byDate)
             }
         }
         item(span = { GridItemSpan(2) }) { Text("실제로 기록한 시각으로 시간대를 나눠요. 막대 길이는 각 카드 안의 최댓값 기준이며, 총 열량은 DB kcal를 합산해요.", style = MaterialTheme.typography.bodySmall) }

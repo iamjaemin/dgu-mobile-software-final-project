@@ -5,6 +5,10 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.example.dgumobilesoftwarefinalproject.ui.*
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Assert.assertTrue
+import androidx.test.platform.app.InstrumentationRegistry
+import com.example.dgumobilesoftwarefinalproject.data.MealRepository
+import java.util.UUID
 
 class MealUiTest {
     @get:Rule val rule = createAndroidComposeRule<MainActivity>()
@@ -14,6 +18,7 @@ class MealUiTest {
     }
 
     @Test fun opensInputSearchAndShowsLiveNutrition() {
+        val testMealName = "검증 식사-${UUID.randomUUID()}"
         rule.waitUntil(15_000) { rule.onAllNodesWithText("음식과 기록을 불러오는 중이에요").fetchSemanticsNodes().isEmpty() }
         rule.onNodeWithText("1/4 · 식사한 시간").assertIsDisplayed()
         rule.onNodeWithText("음식 입력").assertDoesNotExist()
@@ -31,28 +36,31 @@ class MealUiTest {
         rule.onNodeWithText("다음").assertIsNotEnabled()
         rule.onNodeWithText("음식·반찬 찾기").performClick()
         rule.onNodeWithTag("food-search-sheet").assertIsDisplayed()
-        rule.onNodeWithTag("category-밥류").performScrollTo().performClick()
+        rule.onNodeWithTag("food-results-grid").performScrollToNode(hasTestTag("menu-card-밥류"))
+        rule.onNodeWithTag("menu-card-밥류").performClick()
         rule.onNodeWithTag("category-밥류").assertIsSelected()
         rule.onNodeWithContentDescription("음식 이름 검색").performTextInput("검색결과없는항목")
         rule.onNodeWithText("일치하는 음식이 없어요. 검색어나 필터를 바꿔 주세요.").assertExists()
         rule.onNodeWithContentDescription("음식 이름 검색").performTextClearance()
         rule.onNodeWithContentDescription("음식 이름 검색").performTextInput("국밥 돼지머리")
         rule.onNodeWithText("국밥_돼지머리", useUnmergedTree = true).performClick()
+        rule.waitUntil(5_000) { rule.onAllNodesWithText("국밥_돼지머리 추가 완료").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("국밥_돼지머리 추가 완료").assertIsDisplayed()
         rule.onNodeWithText("선택 완료").performClick()
         rule.onNodeWithContentDescription("섭취량 (g)").performScrollTo()
         rule.onNodeWithContentDescription("섭취량 (g)").performTextClearance()
         rule.onNodeWithContentDescription("섭취량 (g)").performTextInput("150")
         rule.onAllNodesWithText("205.5 kcal").onFirst().assertExists()
         rule.onNodeWithContentDescription("음식·반찬 이름").performTextClearance()
-        rule.onNodeWithContentDescription("음식·반찬 이름").performTextInput("검증 식사")
+        rule.onNodeWithContentDescription("음식·반찬 이름").performTextInput(testMealName)
         rule.onNodeWithText("다음").performClick()
         rule.onNodeWithText("3/4 · 사진 업로드").assertIsDisplayed()
         rule.onNodeWithText("사진 선택").assertExists()
         rule.onNodeWithText("다음").performClick()
         rule.onNodeWithText("4/4 · 이번 식사 미리보기").assertIsDisplayed()
         rule.onNodeWithText("식사 기록 저장").assertIsEnabled().performClick()
-        rule.waitUntil(10_000) { rule.onAllNodesWithText("검증 식사").fetchSemanticsNodes().isNotEmpty() }
-        rule.onNodeWithText("검증 식사").performClick()
+        rule.waitUntil(10_000) { rule.onAllNodesWithText(testMealName).fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText(testMealName).performClick()
         rule.onNodeWithText("섭취량 150.0 g").assertExists()
         rule.activityRule.scenario.recreate()
         rule.waitUntil(10_000) { rule.onAllNodesWithText("섭취량 150.0 g").fetchSemanticsNodes().isNotEmpty() }
@@ -61,7 +69,9 @@ class MealUiTest {
         rule.onNodeWithText("이 기록 삭제").performClick()
         rule.waitUntil(5_000) { rule.onAllNodesWithText("삭제").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithText("삭제", useUnmergedTree = true).performClick()
-        rule.waitUntil(10_000) { rule.onAllNodesWithText("아직 기록한 식사가 없어요").fetchSemanticsNodes().isNotEmpty() }
+        rule.waitUntil(10_000) { rule.onAllNodesWithTag("meal-grid").fetchSemanticsNodes().isNotEmpty() }
+        val stored = MealRepository(InstrumentationRegistry.getInstrumentation().targetContext).load()
+        assertTrue(stored.none { meal -> meal.items.any { it.name == testMealName } })
     }
 
     @Test fun showsAnalysisAndBothOfficialSources() {
