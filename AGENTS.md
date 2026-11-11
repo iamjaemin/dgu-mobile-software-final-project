@@ -1,6 +1,6 @@
 # 작업 규칙
 
-- Kotlin + Jetpack Compose 식단 관리 앱. 현재 단계는 계획 및 데이터 선별이다.
+- Kotlin + Jetpack Compose 식단 관리 앱. P003부터 식사 입력·목록·분석을 구현한다.
 - 사용자 요청 전문을 `PROMPT.md`에 순서대로 보존하고 관련 구현 커밋의 전체 해시를 연결한다. 요약으로 대체하지 않는다.
 - 커밋 메시지는 한글로 쓰고 독립적으로 검토 가능한 작업 단위로 커밋한다.
 - 브랜치: `feature/data-repository`(원본 변환·JSON·저장소), `feature/nutrition-calculation`(순수 Kotlin 계산), `feature/ui-compose`(Compose 화면).

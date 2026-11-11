@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "sources": {
+    "mfds_xlsx": {
+      "filename": "20251229_음식DB 19495건.xlsx",
+      "url": "https://various.foodsafetykorea.go.kr/nutrient/general/down/historyList.do",
+      "sha256": "442e13d4bb4fb01755a28b418742e5cbc9af44e566ba6370502e3ccac215868c",
+      "rows": 19495,
+      "acceptedRows": 2566,
+      "rejectedRows": 16929,
+      "rejectionReasons": {
+        "나트륨(mg):missing": 61,
+        "당류(g):missing": 149,
+        "지방(g):missing": 13300,
+        "콜레스테롤(mg):missing": 13461,
+        "탄수화물(g):missing": 12758,
+        "트랜스지방산(g):missing": 16769,
+        "포화지방산(g):missing": 592
+      }
+    },
+    "data_go_kr_json": {
+      "filename": "전국통합식품영양성분정보_음식_표준데이터.json",
+      "url": "https://www.data.go.kr/data/15100070/standard.do",
+      "sha256": "7ba59df14faea2a79bdbd67d13c0e7916490766e5abe2601eed702d68ee6828b",
+      "rows": 19738,
+      "acceptedRows": 2784,
+      "rejectedRows": 16954,
+      "rejectionReasons": {
+        "나트륨(mg):missing": 61,
+        "당류(g):missing": 149,
+        "지방(g):missing": 13319,
+        "콜레스테롤(mg):missing": 13486,
+        "탄수화물(g):missing": 12777,
+        "트랜스지방산(g):missing": 16793,
+        "포화지방산(g):missing": 592
+      }
+    }
+  },
+  "requiredSourceFields": [
+    "식품코드",
+    "식품명",
+    "식품대분류명",
+    "식품기원명",
+    "영양성분함량기준량",
+    "데이터기준일자",
+    "에너지(kcal)",
+    "탄수화물(g)",
+    "단백질(g)",
+    "지방(g)",
+    "당류(g)",
+    "나트륨(mg)",
+    "콜레스테롤(mg)",
+    "포화지방산(g)",
+    "트랜스지방산(g)"
+  ],
+  "summary": {
+    "inputRows": 39233,
+    "acceptedRowsBeforeDeduplication": 5350,
+    "rejectedRows": 33883,
+    "duplicateRowsRemoved": 2566,
+    "outputFoods": 2784,
+    "codesWithConflictingVersions": 2566,
+    "selectedRowsBySource": {
+      "data_go_kr_json": 2784
+    },
+    "basisDistribution": {
+      "100g": 2493,
+      "100mL": 291
+    }
+  },
+  "outputSha256": "e91e88150d2bfdfc3937cf4787b0a53cb72b27b367f428909189b45311a2c8ce",
+  "rowNumbering": {
+    "mfds_xlsx": "Excel row, header at 1",
+    "data_go_kr_json": "records index + 1"
+  }
+}
